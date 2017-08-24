@@ -19,20 +19,20 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 	
 	<!-- <http:request-config name="invoke_resetContentType_API" host="0.0.0.0" port="8082" doc:name="HTTP Request Configuration"/> -->
-	<http:listener-config name="tempworks-bgcheck-httpListenerConfig" host="${host}" port="${port}" doc:name="HTTP Listener Configuration" protocol="HTTPS">
+	<http:listener-config name="jobvite-bgcheck-httpListenerConfig" host="${host}" port="${port}" doc:name="HTTP Listener Configuration" protocol="HTTPS">
         <tls:context>
             <tls:key-store path="${jks.path}" keyPassword="${jks.trust.key.password}" password="${jks.trust.store.password}"/>
         </tls:context>
 	</http:listener-config>
-	<http:request-config name="invoke_verocity_API" host="${verosity.api.host}" port="${verosity.api.port}" doc:name="HTTP Request Configuration" />
-	<http:request-config name="invoke_statusupdate" host="${tempworks.api.host}" port="${tempworks.api.port}" doc:name="HTTP Request Configuration" >
-        <http:basic-authentication username="#[sessionVars.username]" password="#[sessionVars.password]" preemptive="true"/>
-    </http:request-config>
+	<http:request-config name="invoke_requestor_API" host="${requestor.api.host}" port="${requestor.api.port}" doc:name="HTTP Request Configuration" />
+	<http:request-config name="invoke_jobvite_get_API" host="${jobvite.get.api.host}" port="${jobvite.get.api.port}" doc:name="HTTP Request Configuration" />
+	<http:request-config name="invoke_jobvite_verocity_API" host="${jobvite.verocity.api.host}" port="${jobvite.verocity.api.port}" doc:name="HTTP Request Configuration" />
+	<http:request-config name="invoke_jobvite_statusupdate_API" host="${jobvite.statusupdate.api.host}" port="${jobvite.statusupdate.api.port}" doc:name="HTTP Request Configuration" />
     
-	<apikit:config name="tempworks-bgcheck-config" raml="tempworks-bgcheck.raml"
+	<apikit:config name="jobvite-bgcheck-config" raml="jobvite-bgcheck.raml"
 		consoleEnabled="true" consolePath="console"  doc:name="Router" />
 	<context:property-placeholder
-		location="classpath:/config/tempworks-bgcheck-${mule.env}.properties" />
+		location="classpath:/config/jobvite-bgcheck-${mule.env}.properties" />
 	<configuration doc:name="Configuration">
 		<default-threading-profile maxThreadsIdle="120" maxThreadsActive="120" poolExhaustedAction="WAIT" threadTTL="10000"/>
 	</configuration>

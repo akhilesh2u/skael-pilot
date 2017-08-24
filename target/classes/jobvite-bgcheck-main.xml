@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
@@ -12,13 +12,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
-http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
     
 
-	<flow name="tempworks-bgcheck-main">
-		<http:listener config-ref="tempworks-bgcheck-httpListenerConfig"
+	<flow name="jobvite-bgcheck-main">
+		<http:listener config-ref="jobvite-bgcheck-httpListenerConfig"
 			path="/api/*" doc:name="HTTP" />
-        <apikit:router config-ref="tempworks-bgcheck-config" doc:name="APIkit Router"/>
+        <apikit:router config-ref="jobvite-bgcheck-config" doc:name="APIkit Router"/>
         <logger message="ReqCorrelationId=  SessionCorrelationId= NumberOfHeaders=#[message.inboundProperties.size()] PayloadStringSize=#[message.payload != null ? payload : 0] URILength=#[message.inboundProperties['http.request.uri']] Message='API request received through HTTP Listener'" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="INFO Logger for transaction tracking"/>
         <logger message="ReqCorrelationId=  SessionCorrelationId= HTTPMethod=#[message.inboundProperties.'http.method'] RequestUri=#[mesage.inboundProperties['http.request.uri']] FlowVars=#[flowVars] Payload=#[payload] Message='Request entered App'" level="DEBUG" category="com.deverus.tempbgchk.debug.request.httpin" doc:name="DEBUG Logger for daignostics"/>
 

@@ -1,8 +1,8 @@
 <custom__type__definition>
   <version>5.2.0.0</version>
   <typeName class="org.mule.common.metadata.DefaultMetaDataKey">
-    <id>InboundVerocityJson</id>
-    <displayName>InboundVerocityJson</displayName>
+    <id>VerocityTransformationFormat</id>
+    <displayName>VerocityTransformationFormat</displayName>
     <category>DEFAULT</category>
     <metaDataKeyPropertiesManager>
       <properties>
@@ -15,11 +15,11 @@
     <metaDataModelPropertiesManager>
       <properties>
         <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty>
-          <exampleContent>C:\Users\akhilesh.perla\Desktop\Deverus_Documents\Verocity API JSON Schema.json</exampleContent>
+          <exampleContent>C:\Users\akhilesh.perla\Desktop\VerocityTransformationFormat.json</exampleContent>
         </org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty>
         <org.mule.tooling.metadata.properties.DefinitionEditorModeType>
           <mode>EXAMPLE</mode>
-          <path>C:\Users\akhilesh.perla\Desktop\Deverus_Documents\Verocity API JSON Schema.json</path>
+          <path>C:\Users\akhilesh.perla\Desktop\VerocityTransformationFormat.json</path>
         </org.mule.tooling.metadata.properties.DefinitionEditorModeType>
       </properties>
     </metaDataModelPropertiesManager>

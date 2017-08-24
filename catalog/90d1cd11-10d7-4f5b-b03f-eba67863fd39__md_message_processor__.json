@@ -2,15 +2,15 @@
     "inputMessageMetadata": {
         "messagePayload": {
             "connectorName": "#_custom_mule_metadata_type_#",
-            "typeId": "StatusupdateRequest_Outgoing"
+            "typeId": "JobviteIndividualCandidateResponse"
         }
     },
     "outputMessageMetadata": {
         "messagePayload": {
             "connectorName": "#_custom_mule_metadata_type_#",
-            "typeId": "StatusUpdateResponse_Outgoing"
+            "typeId": "VerocityTransformationFormat"
         }
     },
-    "id": "b35aa25e-19ac-47dc-9406-1e06b9e5765b",
+    "id": "90d1cd11-10d7-4f5b-b03f-eba67863fd39",
     "version": "5.2.0.0"
 }

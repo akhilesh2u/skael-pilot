@@ -14,9 +14,9 @@ http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/moc
     <munit:test name="status-update-outgoing-test-suite-status-update-outgoing-processingTest" description="Test">
         <mock:when messageProcessor=".*:.*" doc:name="Mock">
             <mock:with-attributes>
-                <mock:with-attribute name="doc:name" whereValue="#['Invoke Status Update API']"/>
+                <mock:with-attribute name="doc:name" whereValue="#['Invoke Jobvite Status Update API']"/>
             </mock:with-attributes>
-            <mock:then-return payload="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt; &lt;BackgroundReports&gt;  &lt;ProviderReferenceId&gt;   &lt;IdValue&gt;657a6e2d-2781-48a4-95f2-f11f98547963&lt;/IdValue&gt;  &lt;/ProviderReferenceId&gt;  &lt;ScreeningStatus&gt;   &lt;OrderStatus&gt;Completed&lt;/OrderStatus&gt;  &lt;/ScreeningStatus&gt; &lt;/BackgroundReports&gt;"/>
+            <mock:then-return payload="{ &quot;status&quot;:&quot;success&quot; }"/>
         </mock:when>
         <munit:set payload="#[]" doc:name="Set Message" mimeType="application/json">
             <munit:inbound-properties>
@@ -32,14 +32,14 @@ http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/moc
 
         <set-payload value="{ &quot;reportId&quot;: 124, &quot;reportUrl&quot;: &quot;https://verocity.deverus.com/mvp/login_form.cfm?viewreport=124&amp;usertype=client&quot;, &quot;status&quot;: &quot;Complete&quot;, &quot;decision&quot;: &quot;Adverse Findings&quot;, &quot;orderDate&quot;: &quot;June, 03 2008 09:47:00 -0500&quot;, &quot;completeDate&quot;: &quot;June, 03 2008 09:47:00 -0500&quot;, &quot;refId&quot;: &quot;ABCD12345&quot; }" mimeType="application/json" doc:name="Set Payload"/>
         <flow-ref name="status-update-outgoing-processing" doc:name="status-update-outgoing-processing"/>
-        <munit:assert-on-equals message="Failed to execute status-update-outgoing-test Success Flow test case" expectedValue="{ &quot;BackgroundReports&quot;: { &quot;ProviderReferenceId&quot;: { &quot;IdValue&quot;: &quot;657a6e2d-2781-48a4-95f2-f11f98547963&quot; }, &quot;ScreeningStatus&quot;: { &quot;OrderStatus&quot;: &quot;Completed&quot; } } }" actualValue="#[payload]" doc:name="Assert Equals"/>
+        <munit:assert-on-equals message="Failed to execute status-update-outgoing-test Success Flow test case" expectedValue="{ &quot;status&quot;:&quot;success&quot; }" actualValue="#[payload]" doc:name="Assert Equals"/>
     </munit:test>
     <munit:test name="status-update-outgoing-test-suite-status-update-outgoing-failureTest" description="Test">
         <mock:when messageProcessor=".*:.*" doc:name="Mock">
             <mock:with-attributes>
-                <mock:with-attribute name="doc:name" whereValue="#['Invoke Status Update API']"/>
+                <mock:with-attribute name="doc:name" whereValue="#['Invoke Jobvite Status Update API']"/>
             </mock:with-attributes>
-            <mock:then-return payload="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt; &lt;BackgroundReports&gt;  &lt;ProviderReferenceId&gt;   &lt;IdValue&gt;657a6e2d-2781-48a4-95f2-f11f98547963&lt;/IdValue&gt;  &lt;/ProviderReferenceId&gt;  &lt;ScreeningStatus&gt;   &lt;OrderStatus&gt;Completed&lt;/OrderStatus&gt;  &lt;/ScreeningStatus&gt; &lt;/BackgroundReports&gt;"/>
+            <mock:then-return payload="{ &quot;status&quot;:&quot;success&quot; }"/>
         </mock:when>
         <munit:set payload="#[]" doc:name="Set Message" mimeType="application/json">
             <munit:inbound-properties>

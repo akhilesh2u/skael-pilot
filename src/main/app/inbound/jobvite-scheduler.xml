@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:quartz="http://www.mulesoft.org/schema/mule/quartz" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/quartz http://www.mulesoft.org/schema/mule/quartz/current/mule-quartz.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8090" doc:name="HTTP Listener Configuration"/>
+    <quartz:connector name="Quartz" validateConnections="true" doc:name="Quartz"/>
+    <sub-flow name="InvokeRequestorAPI">
+        <http:request config-ref="invoke_requestor_API" path="${requestor.api.path}" method="GET" doc:name="Invoke Requestor API">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json"/>
+                <http:header headerName="Authorization" value="${requestor.authorization.key}"/>
+            </http:request-builder>
+        </http:request>
+        <logger message="The requestor payload: #[payload]" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="Logger"/>
+        <set-payload value="#[message.inboundProperties.'filecontent']" mimeType="application/json" doc:name="Set Payload"/>
+        <dw:transform-message doc:name="Transformed to Requestor to Java Object">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+        </dw:transform-message>
+        <flow-ref name="ProcessRequestorPayload" doc:name="ProcessRequestorPayload"/>
+    </sub-flow>
+    <sub-flow name="ProcessRequestorPayload">
+        <foreach collection="#[payload]" doc:name="For Each">
+            <flow-ref name="set-partnermetada" doc:name="set-partnermetada"/>
+            <dw:transform-message doc:name="Set CustomField Key">
+                <dw:set-variable variableName="customFieldKey"><![CDATA[%dw 1.0
+%output application/java
+//%var mappings = payload.partnerMetadata.*mappings filter (verocityApiFieldName == "package.packageName")
+//%var mappings = payload.partnerMetadata.*mappings
+---
+{
+	"customFieldKey": (payload.partnerMetadata.mappings filter ($.verocityApiFieldName == 'package.packageName'))[0].customFieldKey
+}]]></dw:set-variable>
+            </dw:transform-message>
+            <logger message="The For Loop Counter payload for each requestor:#[payload]" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="Logger"/>
+            <http:request config-ref="invoke_jobvite_get_API" path="${jobvite.get.api.path}" method="GET" doc:name="Invoke Jobvite GET API">
+                <http:request-builder>
+                    <http:query-param paramName="api" value="#[flowVars.'partnerMetadata.api']"/>
+                    <http:query-param paramName="sc" value="#[flowVars.'partnerMetadata.sc']"/>
+                    <http:query-param paramName="company_id" value="#[flowVars.'partnerMetadata.companyId']"/>
+                    <http:query-param paramName="flowstate" value="#[flowVars.'partnerMetadata.requestWflowstate']"/>
+                    <http:query-param paramName="format" value="json"/>
+                    <http:query-param paramName="start" value="#[flowVars.'partnerMetadata.start']"/>
+                    <http:query-param paramName="count" value="#[flowVars.'partnerMetadata.count']"/>
+                </http:request-builder>
+            </http:request>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+            </dw:transform-message>
+            <logger message="Transformed Jobvite response payload #[payload]" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="Logger"/>
+            <foreach collection="#[payload.candidates]" doc:name="For Each">
+                <logger message="The Jobvite Candidate response payload: #[payload]" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="Logger"/>
+                <dw:transform-message doc:name="Transform Message" metadata:id="90d1cd11-10d7-4f5b-b03f-eba67863fd39">
+                    <dw:input-payload doc:sample="sample_data\string.dwl" mimeType="application/java"/>
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	package: {
+		
+		packageId: (payload.application.job.customField filter ($.key == flowVars.customFieldKey.customFieldKey))[0].key,
+		packageName: (payload.application.job.customField filter ($.key == flowVars.customFieldKey.customFieldKey))[0].value		
+	},
+	location: {
+		locationId: payload.application.job.location,
+		locationName: payload.application.job.location
+	},
+	user: {
+		userId: payload.application.job.primaryHiringManager.userId ,
+		firstName: payload.application.job.primaryHiringManager.firstName,
+		lastName: payload.application.job.primaryHiringManager.lastName,
+		email: payload.application.job.primaryHiringManager.userName
+	},
+	applicant: {
+		refId: payload.eId,
+		basicInformation: {
+			firstName: payload.firstName,
+			lastName: payload.lastName,
+			phoneNumber: payload.homePhone,
+			email: payload.email
+		},
+		address: {
+			addressLine1: payload.address,
+			city: payload.city,
+			state: payload.state,
+			zipCode: payload.postalCode
+		}
+	}
+}]]></dw:set-payload>
+                </dw:transform-message>
+                <logger message="The Transformed Verocity API payload: #[payload]" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="Logger"/>
+                <http:request config-ref="invoke_jobvite_verocity_API" path="${jobvite.verocity.api.path}" method="POST" doc:name="Invoke Verocity POST API">
+                    <http:request-builder>
+                        <http:header headerName="Content-Type" value="application/json"/>
+                        <http:header headerName="Authorization" value="${jobvite.verocity.authorization.key}"/>
+                    </http:request-builder>
+                </http:request>
+                <logger message="The Transformed Verocity API response payload: #[payload]" level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="Logger"/>
+            </foreach>
+        </foreach>
+    </sub-flow>
+    <flow name="jobvite-schedulerFlow">
+        <quartz:inbound-endpoint jobName="JobviteScheduler" repeatInterval="900000" connector-ref="Quartz" responseTimeout="10000" doc:name="Quartz">
+            <quartz:event-generator-job/>
+        </quartz:inbound-endpoint>
+        <set-variable variableName="requestTimeStamp" value="#[server.nanoTime()]" doc:name="Inbound Request Timestamp"/>
+        <set-variable variableName="requestorJson" value="#[message.inboundProperties.requestor]" mimeType="application/json" doc:name="Set Requestor from Header"/>
+		<logger message="ReqCorrelationId=  SessionCorrelationId= FlowName=#[flow.Name] NumberOfHeaders=#[message.inboundProperties.size()] PayloadStringSize=#[message.payload != null ? message.payloadAs(java.lang.String) : 0] URILength=#[message.inboundProperties['http.request.uri']] Message='Request triggered by jobviteScheduler and entered flow'"
+		        level="INFO" category="com.deverus.tempbgchk.info.httpin" doc:name="INFO Logger for transaction tracking"/>	
+		<logger message="ReqCorrelationId=  SessionCorrelationId= FlowName=#[flow.Name] HTTPMethod=#[message.inboundProperties.'http.method'] RequestUri=#[mesage.inboundProperties['http.request.uri']] FlowVars=#[flowVars] Payload=#[payload] Message='Request triggered by jobviteScheduler and entered flow'"
+		        level="DEBUG" category="com.deverus.tempbgchk.debug.request.httpin" doc:name="DEBUG Logger for daignostics"/>
+        <flow-ref name="InvokeRequestorAPI" doc:name="InvokeRequestorAPI"/>
+
+        
+        <set-variable variableName="responseTimeStamp" value="#[server.nanoTime()]" doc:name="Outbound Respons Timestamp"/>	
+		<logger message="ReqCorrelationId=  SessionCorrelationId= FlowName=#[flow.Name] ProcessingTimeStamp=#[(flowVars.requestTimeStamp - flowVars.responseTimeStamp)/1000000] HttpStatusCode= #[message.outboundProperties['http.status']] NumberOfHeaders=#[message.inboundProperties.size()] PayloadStringSize=#[message.payload != null ? message.payloadAs(java.lang.String) : 0]  Total Message='Transformed response going out of flow'"
+		        level="INFO" category="com.deverus.tempbgchk.info.response.success" doc:name="INFO Logger for transaction tracking"/>	
+		<logger message="ReqCorrelationId=  SessionCorrelationId= FlowName=#[flow.Name] ProcessingTimeStamp=#[(flowVars.requestTimeStamp - flowVars.responseTimeStamp)/1000000] HttpStatusCode= #[message.outboundProperties['http.status']] HTTPMethod=#[message.inboundProperties.'http.method']  FlowVars=#[flowVars] Payload=#[payload] Message='Transformed response going out of flow'"
+		        level="DEBUG" category="com.deverus.tempbgchk.debug.response.success" doc:name="DEBUG Logger for daignostics"/>
+        
+    </flow>
+    <sub-flow name="set-partnermetada">
+        <set-variable variableName="partnerMetadata.api" value="#[payload.partnerMetadata.api]" doc:name="partnerMetadata.api"/>
+        <set-variable variableName="partnerMetadata.companyId" value="#[payload.partnerMetadata.companyId]" doc:name="partnerMetadata.companyId"/>
+        <set-variable variableName="partnerMetadata.sc" value="#[payload.partnerMetadata.sc]" doc:name="partnerMetadata.sc"/>
+        <set-variable variableName="partnerMetadata.requestWflowstate" value="#[payload.partnerMetadata.requestWflowstate]" doc:name="partnerMetadata.requestWflowstate"/>
+        <set-variable variableName="partnerMetadata.statusWflowstate" value="#[payload.partnerMetadata.statusWflowstate]" doc:name="partnerMetadata.statusWflowstate"/>
+        <set-variable variableName="partnerMetadata.reportWflowstate" value="#[payload.partnerMetadata.reportWflowstate]" doc:name="partnerMetadata.reportWflowstate"/>
+        <set-variable variableName="partnerMetadata.reportStatusKey" value="#[payload.partnerMetadata.reportStatusKey]" doc:name="partnerMetadata.reportStatusKey"/>
+        <set-variable variableName="partnerMetadata.reportUrlKey" value="#[payload.partnerMetadata.reportUrlKey]" doc:name="partnerMetadata.reportUrlKey"/>
+        <set-variable variableName="partnerMetadata.start" value="#[payload.partnerMetadata.start]" doc:name="partnerMetadata.start"/>
+        <set-variable variableName="partnerMetadata.count" value="#[payload.partnerMetadata.count]" doc:name="partnerMetadata.count"/>
+        <set-variable variableName="partnerMetadata.mappings" value="#[payload.partnerMetadata.mappings]" doc:name="partnerMetadata.mappings"/>
+    </sub-flow>
+</mule>
