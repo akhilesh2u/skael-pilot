@@ -118,5 +118,10 @@ http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mo
 		        level="DEBUG" category="com.deverus.tempbgchk.debug.resonse.httpout.error" doc:name="DEBUG Logger for daignostics"/>
      </apikit:mapping>
  </apikit:mapping-exception-strategy>
+    <choice-exception-strategy name="Process-Errors-Choice_Exception_Strategy">
+        <catch-exception-strategy when="#[exception.causedBy(java.lang.Exception)]" doc:name="Handle all the Runtime Exceptions">
+            <logger message="There is a problem processing the mails to HTTP endpoint " level="INFO" category="com.skael.pilot.info.error" doc:name="Logger"/>
+        </catch-exception-strategy>
+    </choice-exception-strategy>
  
  </mule>

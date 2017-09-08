@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.deverus</groupId>
-	<artifactId>jobvite-bgcheck</artifactId>
+	<groupId>com.skael</groupId>
+	<artifactId>skael-pilot</artifactId>
     <version>1.0</version>
     <packaging>mule</packaging>
-	<name>Mule jobvite-bgcheck Application</name>
+	<name>Mule skael-pilot Application</name>
 
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -250,6 +250,12 @@
     <dependency>
             <groupId>com.mulesoft.weave</groupId>
             <artifactId>mule-plugin-weave_2.11</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-schedulers</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>

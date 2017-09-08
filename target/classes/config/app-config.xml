@@ -19,20 +19,21 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 	
 	<!-- <http:request-config name="invoke_resetContentType_API" host="0.0.0.0" port="8082" doc:name="HTTP Request Configuration"/> -->
-	<http:listener-config name="jobvite-bgcheck-httpListenerConfig" host="${host}" port="${port}" doc:name="HTTP Listener Configuration" protocol="HTTPS">
+<!-- 	<http:listener-config name="skael-pilot-httpListenerConfig" host="${host}" port="${port}" doc:name="HTTP Listener Configuration" protocol="HTTPS">
         <tls:context>
             <tls:key-store path="${jks.path}" keyPassword="${jks.trust.key.password}" password="${jks.trust.store.password}"/>
         </tls:context>
 	</http:listener-config>
-	<http:request-config name="invoke_requestor_API" host="${requestor.api.host}" port="${requestor.api.port}" doc:name="HTTP Request Configuration" />
-	<http:request-config name="invoke_jobvite_get_API" host="${jobvite.get.api.host}" port="${jobvite.get.api.port}" doc:name="HTTP Request Configuration" />
-	<http:request-config name="invoke_jobvite_verocity_API" host="${jobvite.verocity.api.host}" port="${jobvite.verocity.api.port}" doc:name="HTTP Request Configuration" />
-	<http:request-config name="invoke_jobvite_statusupdate_API" host="${jobvite.statusupdate.api.host}" port="${jobvite.statusupdate.api.port}" doc:name="HTTP Request Configuration" />
+ --><http:request-config name="invoke_pilot_API" host="${pilot.api.host}" port="${pilot.api.port}" protocol="HTTPS" doc:name="HTTP Request Configuration" >
+ 	<tls:context>
+            <tls:trust-store path="${pilot.jks.path}" password="${pilot.jks.trust.key.password}" type="jks"/>
+        </tls:context>
+</http:request-config>
     
-	<apikit:config name="jobvite-bgcheck-config" raml="jobvite-bgcheck.raml"
-		consoleEnabled="true" consolePath="console"  doc:name="Router" />
+	<!-- <apikit:config name="skael-pilot-config" raml="skael-pilot.raml"
+		consoleEnabled="true" consolePath="console"  doc:name="Router" /> -->
 	<context:property-placeholder
-		location="classpath:/config/jobvite-bgcheck-${mule.env}.properties" />
+		location="classpath:/config/skael-pilot-${mule.env}.properties" />
 	<configuration doc:name="Configuration">
 		<default-threading-profile maxThreadsIdle="120" maxThreadsActive="120" poolExhaustedAction="WAIT" threadTTL="10000"/>
 	</configuration>

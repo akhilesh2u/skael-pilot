@@ -10,8 +10,8 @@
 
 
     <Appenders>
-        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}jobvite-bgcheck.log" 
-                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}jobvite-bgcheck-%i.log">
+        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}skael-pilot.log" 
+                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}skael-pilot-%i.log">
             <PatternLayout pattern="%d [%t] %-5p %c - %m%n" />
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
@@ -47,15 +47,15 @@
         <AsyncLogger name="Tracking" level="WARN"/>
         
         <!-- Retain API flow INFO and WARN statements for metrics and alerting, even when root level set to ERROR -->
-        <AsyncLogger name="com.deverus.tempbgchk.info" level="INFO"/>
-        <AsyncLogger name="com.deverus.tempbgchk.warn" level="WARN"/>
+        <AsyncLogger name="com.skael.pilot.info" level="INFO"/>
+        <AsyncLogger name="com.skael.pilot.warn" level="WARN"/>
         
         <!-- Enable DEBUG logs be enabled through Cloudhub Environment Variables if required for Operational triage -->
-        <AsyncLogger name="com.deverus.tempbgchk.debug.request.httpin"  level="${env:logging.debug.request.httpin.level}"/>
-        <AsyncLogger name="com.deverus.tempbgchk.debug.request.reqflow"  level="DEBUG"/>
-        <AsyncLogger name="com.deverus.tempbgchk.debug.response.resflow"  level="${env:logging.debug.response.resflow.level}"/>
-        <AsyncLogger name="com.deverus.tempbgchk.debug.response.apikit"  level="${env:logging.debug.response.apikit.level}"/>
-        <AsyncLogger name="com.deverus.tempbgchk.debug.response.exception"  level="${env:logging.debug.response.exception.level}"/>
+        <AsyncLogger name="com.skael.pilot.debug.request.httpin"  level="${env:logging.debug.request.httpin.level}"/>
+        <AsyncLogger name="com.skael.pilot.debug.request.reqflow"  level="DEBUG"/>
+        <AsyncLogger name="com.skael.pilot.debug.response.resflow"  level="${env:logging.debug.response.resflow.level}"/>
+        <AsyncLogger name="com.skael.pilot.debug.response.apikit"  level="${env:logging.debug.response.apikit.level}"/>
+        <AsyncLogger name="com.skael.pilot.debug.response.exception"  level="${env:logging.debug.response.exception.level}"/>
         
         <AsyncRoot level="${env:logging.level}">
             <AppenderRef ref="file" />
