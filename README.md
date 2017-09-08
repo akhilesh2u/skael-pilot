@@ -29,3 +29,5 @@ Right now this app this directly deployed in Cloudhub to test it directly and be
 Cloudhub Account username/password: careersakhilesh/Skael123
 Gmail Account username/password: skaelpilot@gmail.com/skael123
 
+Command to import the certificate to the truststore:
+keytool -import -noprompt -trustcacerts -alias skaelcertificate -file "skaelcertificate.cer" -keystore skael.jks -storepass password
